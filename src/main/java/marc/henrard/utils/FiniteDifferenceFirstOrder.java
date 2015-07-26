@@ -3,10 +3,12 @@
  */
 package marc.henrard.utils;
 
-import com.opengamma.analytics.math.function.Function1D;
+import java.util.function.Function;
 
 /**
- * Tools to compute the first order differentiation of function by finite difference.
+ * Tools to compute the first order differentiation of function by finite difference. 
+ * <p>
+ * The functions are functions from R^n - represented by a double[] - to R - represented by a Double.
  */
 public class FiniteDifferenceFirstOrder {
   
@@ -19,26 +21,26 @@ public class FiniteDifferenceFirstOrder {
    * @param scheme The finite difference scheme.
    * @return The derivative.
    */
-  public static double[] differentiate(Function1D<double[], Double> function, double[] x,
+  public static double[] differentiate(Function<double[], Double> function, double[] x,
       double epsilon, FiniteDifferenceSchemes scheme) {
     int nbX = x.length;
     double[] derivative = new double[nbX];
     switch (scheme) {
       case FORWARD: {
-        Double y0 = function.evaluate(x);
+        Double y0 = function.apply(x);
         for (int loopx = 0; loopx < nbX; loopx++) {
           double[] xShifted = x.clone();
           xShifted[loopx] += epsilon;
-          derivative[loopx] = (function.evaluate(xShifted) - y0)/epsilon;
+          derivative[loopx] = (function.apply(xShifted) - y0)/epsilon;
         }
         return derivative;
       }
       case BACKWARD: {
-        Double y0 = function.evaluate(x);
+        Double y0 = function.apply(x);
         for(int loopx = 0; loopx < nbX; loopx++) {
           double[] xShifted = x.clone();
           xShifted[loopx] -= epsilon;
-          derivative[loopx] = (y0 - function.evaluate(xShifted))/epsilon;
+          derivative[loopx] = (y0 - function.apply(xShifted))/epsilon;
         }
         return derivative;
       }
@@ -48,7 +50,7 @@ public class FiniteDifferenceFirstOrder {
           double[] xShiftedM = x.clone();
           xShiftedP[loopx] += epsilon;
           xShiftedM[loopx] -= epsilon;
-          derivative[loopx] = (function.evaluate(xShiftedP) - function.evaluate(xShiftedM)) / (2 * epsilon);
+          derivative[loopx] = (function.apply(xShiftedP) - function.apply(xShiftedM)) / (2 * epsilon);
         }
         return derivative;
       }
@@ -62,13 +64,14 @@ public class FiniteDifferenceFirstOrder {
           xShiftedP2[loopx] += 2 * epsilon;
           xShiftedM1[loopx] -= epsilon;
           xShiftedM2[loopx] -= 2 * epsilon;
-          derivative[loopx] = (-function.evaluate(xShiftedP2) + 8 * function.evaluate(xShiftedP1)
-              - 8 * function.evaluate(xShiftedM1) + function.evaluate(xShiftedM2)) / (12 * epsilon);
+          derivative[loopx] = (-function.apply(xShiftedP2) + 8 * function.apply(xShiftedP1)
+              - 8 * function.apply(xShiftedM1) + function.apply(xShiftedM2)) / (12 * epsilon);
         }
         return derivative;
       }
       default:
-        throw new IllegalArgumentException("Finite difference scheme should be FORWARD, BACKWARD, SYMMETRICAL or THIRD_ORDER");
+        throw new IllegalArgumentException(
+            "Finite difference scheme should be FORWARD, BACKWARD, SYMMETRICAL or FOURTH_ORDER");
     }
   }
 

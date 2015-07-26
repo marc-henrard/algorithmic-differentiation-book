@@ -3,12 +3,11 @@
  */
 package marc.henrard.example;
 
-import com.opengamma.util.tuple.Pair;
-import com.opengamma.util.tuple.Pairs;
+import com.opengamma.strata.collect.tuple.Pair;
 
 /**
  * Simple function with Algorithmic Differentiation example.
- * Starter example in book "Algorithmic Differentiation in Finance".
+ * Starter example in book "Algorithmic Differentiation in Finance Explained".
  */
 public class AdStarter {
   
@@ -48,7 +47,7 @@ public class AdStarter {
     aBar[2] = Math.cos(a[2]) * b2Bar;
     aBar[1] = 1.5d * Math.sqrt(a[1]) * b3Bar + Math.exp(a[1]) * b1Bar;
     aBar[0] = 1.0 * b1Bar;
-    return Pairs.of(b4, aBar);
+    return Pair.of(b4, aBar);
   }
   
   /**
@@ -80,7 +79,7 @@ public class AdStarter {
       b4Dot[loopa] = b2 * - Math.sin(b1) * b1Dot[loopa] + 
           Math.cos(b1) * b2Dot[loopa] + 1.0d * b3Dot[loopa];
     }
-    return Pairs.of(b4, b4Dot);
+    return Pair.of(b4, b4Dot);
   }
   
   /**
@@ -109,7 +108,7 @@ public class AdStarter {
     aBar[2] = Math.cos(a[2]) * b2Bar;
     aBar[1] = 1.5d * tmp2 / a[1] * b3Bar + tmp1 * b1Bar;
     aBar[0] = 1.0 * b1Bar;
-    return Pairs.of(b4, aBar);
+    return Pair.of(b4, aBar);
   }
 
 }
