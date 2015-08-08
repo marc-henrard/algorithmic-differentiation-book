@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 - present by Marc Henrard
  */
-package marc.henrard.utils;
+package marc.henrard.book.algorithmicdifferentiation.utils;
 
 import java.util.function.Function;
 

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 - present by Marc Henrard
  */
-package marc.henrard.utils;
+package marc.henrard.book.algorithmicdifferentiation.utils;
 
 /**
  * Enumeration of the different finite difference schemes used to compute the first order derivatives of functions.
