@@ -3,7 +3,8 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.finance;
 
-import cern.jet.random.Normal;
+import org.apache.commons.math3.distribution.NormalDistribution;
+
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleDerivatives;
@@ -14,12 +15,13 @@ import marc.henrard.book.algorithmicdifferentiation.type.DoubleSad;
  * <p>
  * Implementation of the price and different algorithmic differentiation versions.
  * <p>
- * The mathematical library underlying is <a href="https://dst.lbl.gov/ACSSoftware/colt/index.html">Colt</a> 
+ * The mathematical library underlying is 
+ * <a href="http://commons.apache.org/proper/commons-math/">Apache Commons Mathematics Library</a>
  */
-public class BlackFormula {
+public class BlackFormula2 {
 
   /** The normal distribution implementation. */
-  private static final Normal NORMAL = new Normal(0.0d, 1.0d, null);
+  private static final NormalDistribution NORMAL = new NormalDistribution(0.0d, 1.0d);
 
   /**
    * Returns the option price computed by the Black-Scholes formula.
@@ -43,8 +45,8 @@ public class BlackFormula {
     double dPlus = Math.log(forward / strike) / periodVolatility + 0.5d * periodVolatility;
     double dMinus = dPlus - periodVolatility;
     double omega = isCall ? 1.0d : -1.0d;
-    double nPlus = NORMAL.cdf(omega * dPlus);
-    double nMinus = NORMAL.cdf(omega * dMinus);
+    double nPlus = NORMAL.cumulativeProbability(omega * dPlus);
+    double nMinus = NORMAL.cumulativeProbability(omega * dMinus);
     double price = numeraire * omega * (forward * nPlus - strike * nMinus);
     return price;
   }
@@ -74,8 +76,8 @@ public class BlackFormula {
     double periodVolatility = volatility * Math.sqrt(expiry);
     double dPlus = Math.log(forward / strike) / periodVolatility + 0.5d * periodVolatility;
     double dMinus = dPlus - periodVolatility;
-    double nPlus = NORMAL.cdf(omega * dPlus);
-    double nMinus = NORMAL.cdf(omega * dMinus);
+    double nPlus = NORMAL.cumulativeProbability(omega * dPlus);
+    double nMinus = NORMAL.cumulativeProbability(omega * dMinus);
     double price = numeraire * omega * (forward * nPlus - strike * nMinus);
     // Forward sweep - derivatives
     int nbInputs = 5;
@@ -98,12 +100,12 @@ public class BlackFormula {
       dMinusDot[loopinput] = dPlusDot[loopinput] - periodVolatilityDot[loopinput];
     }
     double[] nPlusDot = new double[nbInputs];
-    double nPdfpPlus = NORMAL.pdf(omega * dPlus);
+    double nPdfpPlus = NORMAL.density(omega * dPlus);
     for (int loopinput = 0; loopinput < nbInputs; loopinput++) {
       nPlusDot[loopinput] = nPdfpPlus * omega * dPlusDot[loopinput];
     }
     double[] nMinusDot = new double[nbInputs];
-    double nPdfdMinus = NORMAL.pdf(omega * dMinus);
+    double nPdfdMinus = NORMAL.density(omega * dMinus);
     for (int loopinput = 0; loopinput < nbInputs; loopinput++) {
       nMinusDot[loopinput] = nPdfdMinus * omega * dMinusDot[loopinput];
     }
@@ -181,15 +183,15 @@ public class BlackFormula {
     double periodVolatility = volatility * Math.sqrt(expiry);
     double dPlus = Math.log(forward / strike) / periodVolatility + 0.5d * periodVolatility;
     double dMinus = dPlus - periodVolatility;
-    double nPlus = NORMAL.cdf(omega * dPlus);
-    double nMinus = NORMAL.cdf(omega * dMinus);
+    double nPlus = NORMAL.cumulativeProbability(omega * dPlus);
+    double nMinus = NORMAL.cumulativeProbability(omega * dMinus);
     double price = numeraire * omega * (forward * nPlus - strike * nMinus);
     // Backward sweep - derivatives
     double priceBar = 1.0;
     double nMinusBar = numeraire * omega * -strike * priceBar;
     double nPlusBar = numeraire * omega * forward * priceBar;
-    double dMinusBar = NORMAL.pdf(omega * dMinus) * omega * nMinusBar;
-    double dPlusBar = 1.0d * dMinusBar + NORMAL.pdf(omega * dPlus) * omega * nPlusBar;
+    double dMinusBar = NORMAL.density(omega * dMinus) * omega * nMinusBar;
+    double dPlusBar = 1.0d * dMinusBar + NORMAL.density(omega * dPlus) * omega * nPlusBar;
     // Note: dPlusBar is always 0; it is the optimal exercise boundary.
     double periodVolatilityBar = -1.0d * dMinusBar +
         (-Math.log(forward / strike) / (periodVolatility * periodVolatility) + 0.5d) * dPlusBar;
@@ -229,13 +231,13 @@ public class BlackFormula {
     double periodVolatility = volatility * sqrtExpiry;
     double dPlus = Math.log(forward / strike) / periodVolatility + 0.5d * periodVolatility;
     double dMinus = dPlus - periodVolatility;
-    double nPlus = NORMAL.cdf(omega * dPlus);
-    double nMinus = NORMAL.cdf(omega * dMinus);
+    double nPlus = NORMAL.cumulativeProbability(omega * dPlus);
+    double nMinus = NORMAL.cumulativeProbability(omega * dMinus);
     double price = numeraire * omega * (forward * nPlus - strike * nMinus);
     // Backward sweep - derivatives
     double priceBar = 1.0;
     double nMinusBar = numeraire * omega * -strike * priceBar;
-    double dMinusBar = NORMAL.pdf(omega * dMinus) * omega * nMinusBar;
+    double dMinusBar = NORMAL.density(omega * dMinus) * omega * nMinusBar;
     double periodVolatilityBar = -1.0d * dMinusBar;
     double[] inputBar = new double[5]; // forward, volatility, numeraire, strike, expiry
     inputBar[4] = volatility * 0.5 / sqrtExpiry * periodVolatilityBar;

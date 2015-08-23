@@ -3,8 +3,7 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.type;
 
-import org.apache.commons.math3.distribution.NormalDistribution;
-
+import cern.jet.random.Normal;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeEntryAad;
 import marc.henrard.book.algorithmicdifferentiation.type.OperationTypeAad;
@@ -20,7 +19,7 @@ public class DoubleAad {
   private final int tapeIndex;
   
   /** The normal distribution implementation. */
-  private static final NormalDistribution NORMAL = new NormalDistribution(0.0d, 1.0d);
+  private static final Normal NORMAL = new Normal(0.0d, 1.0d, null);
   
   /**
    * Constructor.
@@ -225,7 +224,7 @@ public class DoubleAad {
    * @return The cumulative density function result, including the index in the tape.
    */
   public DoubleAad normalCdf(TapeAad tape) {
-    double valueOutput = NORMAL.cumulativeProbability(value);
+    double valueOutput = NORMAL.cdf(value);
     int index = tape.addEntry(new TapeEntryAad(OperationTypeAad.NORMALCDF, tapeIndex, valueOutput));
     return new DoubleAad(valueOutput, index);
   }

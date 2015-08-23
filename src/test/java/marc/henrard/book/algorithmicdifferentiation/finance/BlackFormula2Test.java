@@ -21,11 +21,12 @@ import org.testng.annotations.Test;
 import org.testng.internal.junit.ArrayAsserts;
 
 /**
- * Tests {@link BlackFormula} and its Algorithmic Differentiation implementations.
+ * Tests {@link BlackFormula2} and its Algorithmic Differentiation implementations.
  * <p>
- * The mathematical library underlying is <a href="https://dst.lbl.gov/ACSSoftware/colt/index.html">Colt</a> 
+ * The mathematical library underlying is 
+ * <a href="http://commons.apache.org/proper/commons-math/">Apache Commons Mathematics Library</a>
  */
-public class BlackFormulaTest {
+public class BlackFormula2Test {
   
   // Forward / volatility / Numeraire / Strike / Expiry
   static private final double[][] DATA = { {1.0, 0.50, 1.0, 1.0, 1.0}, {0.05, 0.20, 0.90, 0.04, 2.0}, 
@@ -42,18 +43,18 @@ public class BlackFormulaTest {
     boolean[] callPut = {true, false };
     for (int looptest = 0; looptest < NB_TESTS; looptest++) {
       for (int looppc = 0; looppc < 2; looppc++) {
-        double[] d3Call = FiniteDifferenceFirstOrder.differentiate(callPut[looppc] ? new blackCall2() : new blackPut2(), 
+        double[] d3Call = FiniteDifferenceFirstOrder.differentiate(callPut[looppc] ? new blackCall() : new blackPut(), 
             DATA[looptest], EPSILON, FiniteDifferenceSchemes.FOURTH_ORDER);
-        DoubleDerivatives callPriceSad = BlackFormula.price_Sad(DATA[looptest][0], DATA[looptest][1],
+        DoubleDerivatives callPriceSad = BlackFormula2.price_Sad(DATA[looptest][0], DATA[looptest][1],
             DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], callPut[looppc]);
         ArrayAsserts.assertArrayEquals("BlackFormula SAD " + looptest, d3Call, callPriceSad.derivatives(), TOLERANCE_DELTA);
-        DoubleSad callPriceSadA = BlackFormula.price_Sad_Automatic(DATA[looptest][0], DATA[looptest][1],
+        DoubleSad callPriceSadA = BlackFormula2.price_Sad_Automatic(DATA[looptest][0], DATA[looptest][1],
             DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], callPut[looppc]);
         ArrayAsserts.assertArrayEquals("BlackFormula SAD " + looptest, d3Call, callPriceSadA.derivatives(), TOLERANCE_DELTA);
-        DoubleDerivatives callPriceAad = BlackFormula.price_Aad(DATA[looptest][0], DATA[looptest][1],
+        DoubleDerivatives callPriceAad = BlackFormula2.price_Aad(DATA[looptest][0], DATA[looptest][1],
             DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], callPut[looppc]);
         ArrayAsserts.assertArrayEquals("BlackFormula AAD " + looptest, d3Call, callPriceAad.derivatives(), TOLERANCE_DELTA);
-        DoubleDerivatives callPriceAadOpt = BlackFormula.price_Aad_Optimized(DATA[looptest][0], DATA[looptest][1],
+        DoubleDerivatives callPriceAadOpt = BlackFormula2.price_Aad_Optimized(DATA[looptest][0], DATA[looptest][1],
             DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], callPut[looppc]);
         ArrayAsserts.assertArrayEquals("BlackFormula AAD " + looptest, d3Call, callPriceAadOpt.derivatives(), TOLERANCE_DELTA);
       }
@@ -80,9 +81,9 @@ public class BlackFormulaTest {
     boolean[] callPut = {true, false };
     for (int looptest = 0; looptest < NB_TESTS; looptest++) {
       for (int looppc = 0; looppc < 2; looppc++) {
-        DoubleDerivatives callPriceAad_Optimized = BlackFormula.price_Aad_Optimized(DATA[looptest][0], 
+        DoubleDerivatives callPriceAad_Optimized = BlackFormula2.price_Aad_Optimized(DATA[looptest][0], 
             DATA[looptest][1], DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], callPut[looppc]);
-        DoubleAad callPriceAad_Automatic = BlackFormula.price_Aad_Automatic(DATA_AAD[looptest][0][looppc], 
+        DoubleAad callPriceAad_Automatic = BlackFormula2.price_Aad_Automatic(DATA_AAD[looptest][0][looppc], 
             DATA_AAD[looptest][1][looppc], DATA_AAD[looptest][2][looppc], DATA_AAD[looptest][3][looppc], 
             DATA_AAD[looptest][4][looppc], callPut[looppc], TAPE[looptest][looppc]);
         assertEquals("BlackFormula AAD " + looptest, 
@@ -97,21 +98,21 @@ public class BlackFormulaTest {
 }
 
 /** Inner class to write Black call price as a Function. */
-class blackCall2 implements Function<double[], Double> {
+class blackCall implements Function<double[], Double> {
 
   @Override
   public Double apply(double[] x) {
-      return BlackFormula.price(x[0], x[1], x[2], x[3], x[4], true);
+      return BlackFormula2.price(x[0], x[1], x[2], x[3], x[4], true);
   }
   
 }
 
 /** Inner class to write Black put price as a Function. */
-class blackPut2 implements Function<double[], Double> {
+class blackPut implements Function<double[], Double> {
 
   @Override
   public Double apply(double[] x) {
-      return BlackFormula.price(x[0], x[1], x[2], x[3], x[4], false);
+      return BlackFormula2.price(x[0], x[1], x[2], x[3], x[4], false);
   }
   
 }

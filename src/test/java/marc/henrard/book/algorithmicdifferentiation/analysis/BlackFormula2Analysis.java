@@ -3,7 +3,7 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.analysis;
 
-import marc.henrard.book.algorithmicdifferentiation.finance.BlackFormula;
+import marc.henrard.book.algorithmicdifferentiation.finance.BlackFormula2;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeEntryAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeUtils;
@@ -18,9 +18,10 @@ import org.testng.annotations.Test;
  * Analyzes the Black formula and its Algorithmic Differentiation implementations.
  * The results of this analysis are described in the book in Sections 3.1 and Section XXX.
  * <p>
- * The mathematical library underlying is <a href="https://dst.lbl.gov/ACSSoftware/colt/index.html">Colt</a>
+ * The mathematical library underlying is 
+ * <a href="http://commons.apache.org/proper/commons-math/">Apache Commons Mathematics Library</a>
  */
-public class BlackFormulaAnalysis {
+public class BlackFormula2Analysis {
   
   // Forward / volatility / Numeraire / Strike / Expiry
   static private final double[][] DATA = { 
@@ -42,14 +43,14 @@ public class BlackFormulaAnalysis {
     int nbRep = 3;
 
     for (int looprep = 0; looprep < nbRep; looprep++) { // Start repetitions
-      System.out.println("Black formula - performance review (Colt mathematical library): run " + looprep);
+      System.out.println("Black formula - performance review (Apache Commons Mathematics library): run " + looprep);
 
       startTime = System.currentTimeMillis();
       for (int loopperf = 0; loopperf < nbTest; loopperf++) {
         for (int looptest = 0; looptest < NB_TESTS; looptest++) {
-          double call = BlackFormula.price(DATA[looptest][0], DATA[looptest][1],
+          double call = BlackFormula2.price(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], true);
-          double put = BlackFormula.price(DATA[looptest][0], DATA[looptest][1],
+          double put = BlackFormula2.price(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], false);
         }
       }
@@ -60,9 +61,9 @@ public class BlackFormulaAnalysis {
       startTime = System.currentTimeMillis();
       for (int loopperf = 0; loopperf < nbTest; loopperf++) {
         for (int looptest = 0; looptest < NB_TESTS; looptest++) {
-          DoubleDerivatives callPriceAd = BlackFormula.price_Sad(DATA[looptest][0], DATA[looptest][1],
+          DoubleDerivatives callPriceAd = BlackFormula2.price_Sad(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], true);
-          DoubleDerivatives putPriceAd = BlackFormula.price_Sad(DATA[looptest][0], DATA[looptest][1],
+          DoubleDerivatives putPriceAd = BlackFormula2.price_Sad(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], false);
         }
       }
@@ -73,9 +74,9 @@ public class BlackFormulaAnalysis {
       startTime = System.currentTimeMillis();
       for (int loopperf = 0; loopperf < nbTest; loopperf++) {
         for (int looptest = 0; looptest < NB_TESTS; looptest++) {
-          DoubleSad callPriceAd = BlackFormula.price_Sad_Automatic(DATA[looptest][0], DATA[looptest][1],
+          DoubleSad callPriceAd = BlackFormula2.price_Sad_Automatic(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], true);
-          DoubleSad putPriceAd = BlackFormula.price_Sad_Automatic(DATA[looptest][0], DATA[looptest][1],
+          DoubleSad putPriceAd = BlackFormula2.price_Sad_Automatic(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], false);
         }
       }
@@ -86,9 +87,9 @@ public class BlackFormulaAnalysis {
       startTime = System.currentTimeMillis();
       for (int loopperf = 0; loopperf < nbTest; loopperf++) {
         for (int looptest = 0; looptest < NB_TESTS; looptest++) {
-          DoubleDerivatives callPriceAd = BlackFormula.price_Aad(DATA[looptest][0], DATA[looptest][1],
+          DoubleDerivatives callPriceAd = BlackFormula2.price_Aad(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], true);
-          DoubleDerivatives putPriceAd = BlackFormula.price_Aad(DATA[looptest][0], DATA[looptest][1],
+          DoubleDerivatives putPriceAd = BlackFormula2.price_Aad(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], false);
         }
       }
@@ -99,9 +100,9 @@ public class BlackFormulaAnalysis {
       startTime = System.currentTimeMillis();
       for (int loopperf = 0; loopperf < nbTest; loopperf++) {
         for (int looptest = 0; looptest < NB_TESTS; looptest++) {
-          DoubleDerivatives callPriceAd = BlackFormula.price_Aad_Optimized(DATA[looptest][0], DATA[looptest][1],
+          DoubleDerivatives callPriceAd = BlackFormula2.price_Aad_Optimized(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], true);
-          DoubleDerivatives putPriceAd = BlackFormula.price_Aad_Optimized(DATA[looptest][0], DATA[looptest][1],
+          DoubleDerivatives putPriceAd = BlackFormula2.price_Aad_Optimized(DATA[looptest][0], DATA[looptest][1],
               DATA[looptest][2], DATA[looptest][3], DATA[looptest][4], false);
         }
       }
@@ -121,10 +122,10 @@ public class BlackFormulaAnalysis {
             int va1 = tapePut.addEntry(new TapeEntryAad(OperationTypeAad.INPUT, DATA[looptest][loopi]));
             dataAad[loopi][1] = new DoubleAad(DATA[looptest][loopi], va1);
           }
-          DoubleAad callPriceAd = BlackFormula.price_Aad_Automatic(dataAad[0][0], dataAad[1][0],
+          DoubleAad callPriceAd = BlackFormula2.price_Aad_Automatic(dataAad[0][0], dataAad[1][0],
               dataAad[2][0], dataAad[3][0], dataAad[4][0], true, tapeCall);
           TapeUtils.interpret(tapeCall);
-          DoubleAad putPriceAd = BlackFormula.price_Aad_Automatic(dataAad[0][1], dataAad[1][1],
+          DoubleAad putPriceAd = BlackFormula2.price_Aad_Automatic(dataAad[0][1], dataAad[1][1],
               dataAad[2][1], dataAad[3][1], dataAad[4][1], false, tapePut);
           TapeUtils.interpret(tapePut);
         }

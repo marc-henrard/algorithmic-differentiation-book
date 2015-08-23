@@ -49,7 +49,7 @@ public class AdStarterAnalysis {
     int nbTest = 100_000;
 
     for (int looprep = 0; looprep < nbRep; looprep++) { // Start repetitions
-      System.out.println("Performance review: run " + looprep);
+      System.out.println("Starter example performance review: run " + looprep);
       
       startTime = System.currentTimeMillis();
       for (int loopperf = 0; loopperf < nbTest; loopperf++) {
@@ -175,7 +175,7 @@ public class AdStarterAnalysis {
       // 250 ms recording only (no interpretation).
       
     } // End repetition
-  }
+  } 
   
 }
 

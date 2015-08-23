@@ -6,8 +6,7 @@ package marc.henrard.book.algorithmicdifferentiation.tape;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.distribution.NormalDistribution;
-
+import cern.jet.random.Normal;
 import marc.henrard.book.algorithmicdifferentiation.type.OperationTypeAad;
 
 /**
@@ -16,7 +15,7 @@ import marc.henrard.book.algorithmicdifferentiation.type.OperationTypeAad;
 public class TapeUtils {
   
   /** The normal distribution implementation. */
-  private static final NormalDistribution NORMAL = new NormalDistribution(0.0d, 1.0d);
+  private static final Normal NORMAL = new Normal(0.0d, 1.0d, null);
   
   /**
    * Interpret a tape. 
@@ -100,7 +99,7 @@ public class TapeUtils {
           break;
         case NORMALCDF:
           tape.getEntry(entry.getIndexArg1()).addValueBar(
-              NORMAL.probability(tape.getEntry(entry.getIndexArg1()).getValue()) * entry.getValueBar());
+              NORMAL.pdf(tape.getEntry(entry.getIndexArg1()).getValue()) * entry.getValueBar());
           break;
         default:
           break;

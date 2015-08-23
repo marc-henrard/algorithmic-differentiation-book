@@ -3,7 +3,7 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.type;
 
-import org.apache.commons.math3.distribution.NormalDistribution;
+import cern.jet.random.Normal;
 
 /**
  * Class describing a augmented double for Standard (or Tangent or Forward) Algorithmic Differentiation.
@@ -18,7 +18,7 @@ public class DoubleSad {
   private final double[] derivatives;
   
   /** The normal distribution implementation. */
-  private static final NormalDistribution NORMAL = new NormalDistribution(0.0d, 1.0d);
+  private static final Normal NORMAL = new Normal(0.0d, 1.0d, null);
   
   /**
    * Constructor.
@@ -277,9 +277,9 @@ public class DoubleSad {
    * @return The cumulative density.
    */
   public DoubleSad normalCdf() {
-    double valueOutput = NORMAL.cumulativeProbability(value);
+    double valueOutput = NORMAL.cdf(value);
     double[] derivativesOutput = new double[nbDerivatives];
-    double opDot = NORMAL.probability(value);
+    double opDot = NORMAL.pdf(value);
     for(int loopd=0; loopd< nbDerivatives; loopd++) {
       derivativesOutput[loopd] = opDot * derivatives[loopd];
     }

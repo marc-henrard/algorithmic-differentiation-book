@@ -85,4 +85,6 @@ public class TapeUtilsTest {
     assertEquals("TapeUtils: interpret - ADDITION", tape.getEntry(2).getIndexArg2(), index2In);
   }
   
+  //TODO: add tests for other operations
+  
 }
