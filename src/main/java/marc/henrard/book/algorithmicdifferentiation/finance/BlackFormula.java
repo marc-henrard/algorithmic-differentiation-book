@@ -256,6 +256,7 @@ public class BlackFormula {
    * @param strike The strike price/rate.
    * @param expiry The time to expiry.
    * @param isCall The call (true) / put (false) flag.
+   * @param tape The tape where the operations are recorded. The tape is modified by the method.
    * @return The price and derivatives.
    * @throws MathException 
    */
@@ -278,4 +279,5 @@ public class BlackFormula {
         .multipliedBy(forward.multipliedBy(nPlus, tape).minus(strike.multipliedBy(nMinus, tape), tape), tape);
     return price;
   }
+  
 }
