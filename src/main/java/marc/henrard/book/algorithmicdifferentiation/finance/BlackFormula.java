@@ -4,6 +4,7 @@
 package marc.henrard.book.algorithmicdifferentiation.finance;
 
 import cern.jet.random.Normal;
+import marc.henrard.book.algorithmicdifferentiation.mathad.MathAad;
 import marc.henrard.book.algorithmicdifferentiation.mathad.MathSad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleAad;
@@ -273,14 +274,14 @@ public class BlackFormula {
       boolean isCall, 
       TapeAad tape) {
     double omega = isCall ? 1.0d : -1.0d;
-    DoubleAad periodVolatility = volatility.multipliedBy(expiry.sqrt(tape), tape);
-    DoubleAad dPlus = forward.dividedBy(strike, tape).log(tape).dividedBy(periodVolatility, tape)
-        .plus(periodVolatility.multipliedBy(0.5d, tape), tape);
-    DoubleAad dMinus = dPlus.minus(periodVolatility, tape);
-    DoubleAad nPlus = dPlus.multipliedBy(omega, tape).normalCdf(tape);
-    DoubleAad nMinus = dMinus.multipliedBy(omega, tape).normalCdf(tape);
-    DoubleAad price = numeraire.multipliedBy(omega, tape)
-        .multipliedBy(forward.multipliedBy(nPlus, tape).minus(strike.multipliedBy(nMinus, tape), tape), tape);
+    DoubleAad periodVolatility = MathAad.multipliedBy(volatility, MathAad.sqrt(expiry, tape), tape);
+    DoubleAad dPlus = MathAad.plus(MathAad.dividedBy(MathAad.log(MathAad.dividedBy(forward, strike, tape), tape), 
+        periodVolatility, tape), MathAad.multipliedBy(periodVolatility, 0.5d, tape), tape);
+    DoubleAad dMinus = MathAad.minus(dPlus, periodVolatility, tape);
+    DoubleAad nPlus = MathAad.normalCdf(MathAad.multipliedBy(dPlus, omega, tape), tape);
+    DoubleAad nMinus = MathAad.normalCdf(MathAad.multipliedBy(dMinus, omega, tape), tape);
+    DoubleAad price = MathAad.multipliedBy(MathAad.multipliedBy(numeraire, omega, tape), 
+        MathAad.minus(MathAad.multipliedBy(forward, nPlus, tape), MathAad.multipliedBy(strike, nMinus, tape), tape), tape);
     return price;
   }
   

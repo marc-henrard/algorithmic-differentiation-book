@@ -3,6 +3,7 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.example;
 
+import marc.henrard.book.algorithmicdifferentiation.mathad.MathAad;
 import marc.henrard.book.algorithmicdifferentiation.mathad.MathSad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleAad;
@@ -172,10 +173,10 @@ public class AdStarter {
    * @return The value of f.
    */
   static public DoubleAad f_Aad_Automatic(DoubleAad[] a, TapeAad tape) {
-    DoubleAad b1 = a[0].plus(a[1].exp(tape), tape);
-    DoubleAad b2 = a[2].sin(tape).plus(a[3].cos(tape), tape);
-    DoubleAad b3 = a[1].pow(1.5d, tape).plus(a[3], tape);
-    DoubleAad b4 = b1.cos(tape).multipliedBy(b2, tape).plus(b3, tape);
+    DoubleAad b1 = MathAad.plus(a[0], MathAad.exp(a[1], tape), tape);
+    DoubleAad b2 = MathAad.plus(MathAad.sin(a[2], tape), MathAad.cos(a[3], tape), tape);
+    DoubleAad b3 = MathAad.plus(MathAad.pow(a[1], 1.5d, tape), a[3], tape);
+    DoubleAad b4 = MathAad.plus(MathAad.multipliedBy(MathAad.cos(b1, tape), b2, tape), b3, tape);
     return b4;
   }
 

@@ -3,6 +3,7 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.finance;
 
+import marc.henrard.book.algorithmicdifferentiation.mathad.MathAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeEntryAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleAad;
@@ -200,38 +201,39 @@ public class SabrVolatilityFormula {
       DoubleAad strike, 
       DoubleAad expiry, 
       TapeAad tape) {
-    DoubleAad beta1 = beta.multipliedBy(-1.0d, tape).plus(1.0d, tape);
-    DoubleAad fKbeta =  forward.multipliedBy(strike, tape).pow(beta1.multipliedBy(0.5d, tape), tape);
-    DoubleAad logfK = forward.dividedBy(strike, tape).log(tape);
-    DoubleAad z = nu.dividedBy(alpha, tape).multipliedBy(fKbeta, tape).multipliedBy(logfK, tape);
+    DoubleAad beta1 = MathAad.plus(MathAad.multipliedBy(beta, -1.0d, tape), 1.0d, tape);
+    DoubleAad fKbeta =  MathAad.pow(MathAad.multipliedBy(forward, strike, tape), MathAad.multipliedBy(beta1, 0.5d, tape), tape);
+    DoubleAad logfK = MathAad.log(MathAad.dividedBy(forward, strike, tape), tape);
+    DoubleAad z = MathAad.multipliedBy(MathAad.multipliedBy(MathAad.dividedBy(nu, alpha, tape), fKbeta, tape), logfK, tape);
     DoubleAad zxz;
     if(Math.abs(z.value()) < Z_RANGE) { // z close to 0, first order approximation for x/x(z)
-      zxz =  z.multipliedBy(rho, tape).multipliedBy(-0.5d, tape).plus(1.0d, tape);
+      zxz =  MathAad.plus(MathAad.multipliedBy(MathAad.multipliedBy(z, rho, tape), -0.5d, tape), 1.0d, tape);
     } else {
-      DoubleAad sqz =  rho.multipliedBy(z, tape).multipliedBy(-2.0d, tape).plus(1.0d, tape)
-          .plus(z.multipliedBy(z, tape), tape).sqrt(tape);
-      DoubleAad xz =  sqz.plus(z, tape).minus(rho, tape).dividedBy(rho.multipliedBy(-1.0d, tape)
-          .plus(1.0d, tape), tape).log(tape);
-      zxz = z.dividedBy(xz, tape);
+      DoubleAad sqz =  MathAad.sqrt(MathAad.plus(MathAad.plus(MathAad.multipliedBy(MathAad.multipliedBy(rho, z, tape), 
+          -2.0d, tape), 1.0d, tape), MathAad.multipliedBy(z, z, tape), tape), tape);
+      DoubleAad xz =  MathAad.log(MathAad.dividedBy(MathAad.minus(MathAad.plus(sqz, z, tape), rho, tape), 
+          MathAad.plus(MathAad.multipliedBy(rho, -1.0d, tape), 1.0d, tape), tape), tape);
+      zxz = MathAad.dividedBy(z, xz, tape);
     }
-    DoubleAad beta24 = beta1.multipliedBy(beta1, tape).multipliedBy(1.0d/24.0d, tape);
-    DoubleAad beta1920 = beta1.multipliedBy(beta1, tape).multipliedBy(beta1, tape).multipliedBy(beta1, tape)
-        .multipliedBy(1.0d/1920d, tape);
-    DoubleAad logfK2 = logfK.multipliedBy(logfK, tape);
-    DoubleAad factor11 = beta24.multipliedBy(logfK2, tape);
-    DoubleAad factor12 = beta1920.multipliedBy(logfK2, tape).multipliedBy(logfK2, tape);
-    DoubleAad num1 =  factor11.plus(factor12, tape).plus(1.0d, tape);
-    DoubleAad factor1 = alpha.dividedBy(fKbeta.multipliedBy(num1, tape), tape);
-    DoubleAad factor31 = beta24.multipliedBy(alpha, tape).multipliedBy(alpha, tape)
-        .dividedBy(fKbeta.multipliedBy(fKbeta, tape), tape);
-    DoubleAad factor32 =  rho.multipliedBy(0.25d, tape).multipliedBy(beta, tape).multipliedBy(nu, tape)
-        .multipliedBy(alpha, tape).dividedBy(fKbeta, tape);
-    DoubleAad factor33 =  rho.multipliedBy(rho, tape).multipliedBy(-3.0d, tape).plus(2.0d, tape)
-        .multipliedBy(1.0d/24.0d, tape).multipliedBy(nu, tape).multipliedBy(nu, tape);
-    DoubleAad factor3 = factor31.plus(factor32, tape).plus(factor33, tape).multipliedBy(expiry, tape).plus(1.0d, tape);
-    return factor1.multipliedBy(zxz, tape).multipliedBy(factor3, tape);
+    DoubleAad beta12 = MathAad.multipliedBy(beta1, beta1, tape);
+    DoubleAad beta24 = MathAad.multipliedBy(beta12, 1.0d/24.0d, tape);
+    DoubleAad beta1920 = MathAad.multipliedBy(MathAad.multipliedBy(beta12, beta12, tape), 1.0d/1920d, tape);
+    DoubleAad logfK2 = MathAad.multipliedBy(logfK, logfK, tape);
+    DoubleAad factor11 = MathAad.multipliedBy(beta24, logfK2, tape);
+    DoubleAad factor12 = MathAad.multipliedBy(MathAad.multipliedBy(beta1920, logfK2, tape), logfK2, tape);
+    DoubleAad num1 =  MathAad.plus(MathAad.plus(factor11, factor12, tape), 1.0d, tape);
+    DoubleAad factor1 = MathAad.dividedBy(alpha, MathAad.multipliedBy(fKbeta, num1, tape), tape);
+    DoubleAad factor31 = MathAad.dividedBy(MathAad.multipliedBy(MathAad.multipliedBy(beta24, alpha, tape), alpha, tape),
+        MathAad.multipliedBy(fKbeta, fKbeta, tape), tape);
+    DoubleAad factor32 =  MathAad.dividedBy(MathAad.multipliedBy(MathAad.multipliedBy(MathAad.multipliedBy(
+        MathAad.multipliedBy(rho, 0.25d, tape), beta, tape), nu, tape), alpha, tape), fKbeta, tape);
+    DoubleAad factor33 =  MathAad.multipliedBy(MathAad.multipliedBy(MathAad.plus(MathAad.multipliedBy(
+        MathAad.multipliedBy(rho, rho, tape), -3.0d, tape), 2.0d, tape), 1.0d/24.0d, tape), 
+        MathAad.multipliedBy(nu, nu, tape), tape);
+    DoubleAad factor3 = MathAad.plus(MathAad.multipliedBy(MathAad.plus(
+        MathAad.plus(factor31, factor32, tape), factor33, tape), expiry, tape), 1.0d, tape);
+    return MathAad.multipliedBy(MathAad.multipliedBy(factor1, zxz, tape), factor3, tape);
   }
-
 
   /**
    * Approximated implied Black volatility for the SABR model and the volatility derivatives.

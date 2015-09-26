@@ -5,6 +5,7 @@ package marc.henrard.book.algorithmicdifferentiation.tape;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
+import marc.henrard.book.algorithmicdifferentiation.mathad.MathAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeEntryAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeUtils;
@@ -43,7 +44,7 @@ public class TapeUtilsTest {
     TapeEntryAad inEntry = new TapeEntryAad(OperationTypeAad.INPUT, value);
     int indexIn = tape.addEntry(inEntry);
     DoubleAad in = new DoubleAad(value, indexIn);
-    DoubleAad add1 = in.plus(1.0d, tape);
+    DoubleAad add1 = MathAad.plus(in, 1.0d, tape);
     TapeUtils.interpret(tape);
     assertTrue("TapeUtils: interpret - ADDITION1", tape.size()==2);
     assertTrue("TapeUtils: interpret - ADDITION1", tape.getEntry(0).getOperationType() == OperationTypeAad.INPUT);
@@ -68,7 +69,7 @@ public class TapeUtilsTest {
     int index2In = tape.addEntry(in2Entry);
     DoubleAad in1 = new DoubleAad(value1, index1In);
     DoubleAad in2 = new DoubleAad(value2, index2In);
-    DoubleAad add = in1.plus(in2, tape);
+    DoubleAad add = MathAad.plus(in1, in2, tape);
     TapeUtils.interpret(tape);
     assertTrue("TapeUtils: interpret - ADDITION", tape.size()==3);
     assertTrue("TapeUtils: interpret - ADDITION", tape.getEntry(0).getOperationType() == OperationTypeAad.INPUT);
