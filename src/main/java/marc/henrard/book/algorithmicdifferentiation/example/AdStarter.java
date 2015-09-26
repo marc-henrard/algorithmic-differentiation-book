@@ -3,6 +3,7 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.example;
 
+import marc.henrard.book.algorithmicdifferentiation.mathad.MathSad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleDerivatives;
@@ -101,10 +102,10 @@ public class AdStarter {
    * @return The value of f and its derivatives.
    */
   static public DoubleSad f_Sad_Automatic(DoubleSad[] a) {
-    DoubleSad b1 = a[0].plus(a[1].exp());
-    DoubleSad b2 = a[2].sin().plus(a[3].cos());
-    DoubleSad b3 = a[1].pow(1.5d).plus(a[3]);
-    DoubleSad b4 = b1.cos().multipliedBy(b2).plus(b3);
+    DoubleSad b1 = MathSad.plus(a[0], MathSad.exp(a[1]));
+    DoubleSad b2 = MathSad.plus(MathSad.sin(a[2]), MathSad.cos(a[3]));
+    DoubleSad b3 = MathSad.plus(MathSad.pow(a[1], 1.5d), a[3]);
+    DoubleSad b4 = MathSad.plus(MathSad.multipliedBy(MathSad.cos(b1), b2), b3);
     return b4;
   }
   

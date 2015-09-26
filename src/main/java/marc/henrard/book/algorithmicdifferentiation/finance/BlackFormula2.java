@@ -5,6 +5,7 @@ package marc.henrard.book.algorithmicdifferentiation.finance;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
+import marc.henrard.book.algorithmicdifferentiation.mathad.MathSad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleDerivatives;
@@ -123,7 +124,10 @@ public class BlackFormula2 {
   /**
    * Returns the option price for the Black-Scholes formula and its derivatives with respect to 
    * [0] forward, [1] volatility, [2] numeraire, [3] strike, and [4] expiry.
-   * The derivatives are computed by Standard Algorithmic Differentiation.
+   * The derivatives are computed by automatic Standard Algorithmic Differentiation.
+   * <p>
+   * The mathematical library underlying the automatic AD is 
+   *  <a href="https://dst.lbl.gov/ACSSoftware/colt/index.html">Colt</a> 
    * @param forward The forward price/rate.
    * @param volatility The log-normal volatility of the model.
    * @param numeraire The numeraire.
@@ -149,12 +153,15 @@ public class BlackFormula2 {
     input[4] = expiry;
     DoubleSad[] inputSad = DoubleSad.init(input);
     double omega = isCall ? 1.0d : -1.0d;
-    DoubleSad periodVolatility = inputSad[1].multipliedBy(inputSad[4].sqrt());
-    DoubleSad dPlus = inputSad[0].dividedBy(inputSad[3]).log().dividedBy(periodVolatility).plus(periodVolatility.multipliedBy(0.5d));
-    DoubleSad dMinus = dPlus.minus(periodVolatility);
-    DoubleSad nPlus = dPlus.multipliedBy(omega).normalCdf();
-    DoubleSad nMinus = dMinus.multipliedBy(omega).normalCdf();
-    DoubleSad price = inputSad[2].multipliedBy(omega).multipliedBy(inputSad[0].multipliedBy(nPlus).minus(inputSad[3].multipliedBy(nMinus)));
+    DoubleSad periodVolatility = MathSad.multipliedBy(inputSad[1], MathSad.sqrt(inputSad[4]));
+    DoubleSad dPlus = MathSad.plus(
+        MathSad.dividedBy(MathSad.log(MathSad.dividedBy(inputSad[0], inputSad[3])), periodVolatility), 
+        MathSad.multipliedBy(periodVolatility, 0.5d));
+    DoubleSad dMinus = MathSad.minus(dPlus, periodVolatility);
+    DoubleSad nPlus = MathSad.normalCdf(MathSad.multipliedBy(dPlus, omega));
+    DoubleSad nMinus = MathSad.normalCdf(MathSad.multipliedBy(dMinus, omega));
+    DoubleSad price = MathSad.multipliedBy(MathSad.multipliedBy(inputSad[2], omega), 
+        MathSad.minus(MathSad.multipliedBy(inputSad[0], nPlus), MathSad.multipliedBy(inputSad[3], nMinus)));
     return price;
   }
 
