@@ -3,7 +3,7 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.analysis;
 
-import marc.henrard.book.algorithmicdifferentiation.finance.BlackFormula2;
+import marc.henrard.book.algorithmicdifferentiation.finance.formula.BlackFormula2;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeEntryAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeUtils;

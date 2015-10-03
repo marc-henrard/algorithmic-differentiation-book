@@ -23,14 +23,17 @@ public class TapeUtils {
    * The exact description of the interpretation can be found in the book
    * M. Henrard, Algorithmic Differentiation in Finance Explained, to appear. Section 4.2.
    * @param tape The tape.
+   * @return The derivatives with respect to the input as recorded in the tape.
    */
-  public static void interpret(TapeAad tape) {
+  public static double[] interpret(TapeAad tape) {
     int nbEntries = tape.size();
     tape.getEntry(nbEntries-1).addValueBar(1.0d);
+    List<Double> derivativesList = new ArrayList<Double>();
     for(int loope = nbEntries-1; loope>=0; loope--  ) {
       TapeEntryAad entry = tape.getEntry(loope);
       switch (entry.getOperationType()) {
         case INPUT:
+          derivativesList.add(entry.getValueBar());
           break;
         case MANUAL:
           tape.getEntry(entry.getIndexArg1()).addValueBar(entry.getExtraValue() * entry.getValueBar());
@@ -105,6 +108,12 @@ public class TapeUtils {
           break;
       }
     }
+    int nbDerivatives = derivativesList.size();
+    double[] derivatives = new double[nbDerivatives];
+    for (int loopd = 0; loopd < nbDerivatives; loopd++) {
+      derivatives[loopd] = derivativesList.get(nbDerivatives - 1 - loopd);
+    }
+    return derivatives;
   }
   
   /**
@@ -115,7 +124,7 @@ public class TapeUtils {
   public static double[] extractDerivatives(TapeAad tape) {
     int nbEntries = tape.size();
     List<Double> derivativesList = new ArrayList<Double>();
-    for(int loope = 0; loope < nbEntries; loope++) {
+    for (int loope = 0; loope < nbEntries; loope++) {
       TapeEntryAad entry = tape.getEntry(loope);
       if (entry.getOperationType() == OperationTypeAad.INPUT) {
         derivativesList.add(entry.getValueBar());
@@ -123,7 +132,7 @@ public class TapeUtils {
     }
     int nbDerivatives = derivativesList.size();
     double[] derivatives = new double[nbDerivatives];
-    for(int loopd=0; loopd<nbDerivatives; loopd++) {
+    for (int loopd = 0; loopd < nbDerivatives; loopd++) {
       derivatives[loopd] = derivativesList.get(loopd);
     }
     return derivatives;

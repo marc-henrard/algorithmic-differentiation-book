@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 - present by Marc Henrard
  */
-package marc.henrard.book.algorithmicdifferentiation.finance;
+package marc.henrard.book.algorithmicdifferentiation.finance.formula;
 
 import marc.henrard.book.algorithmicdifferentiation.mathad.MathAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;

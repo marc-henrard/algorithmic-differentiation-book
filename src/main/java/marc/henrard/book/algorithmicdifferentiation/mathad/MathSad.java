@@ -25,12 +25,12 @@ public class MathSad {
    * @param d2 The second augmented double.
    * @return The sum.
    */
-  public static DoubleSad plus(DoubleSad d1, DoubleSad d2){
+  public static DoubleSad plus(DoubleSad d1, DoubleSad d2) {
     int nbDerivatives = d1.getNbDerivatives();
     ArgChecker.isTrue(d2.getNbDerivatives() == nbDerivatives, "derivative lengths should be equal");
     double valueOutput = d1.value() + d2.value();
     double[] derivativesOutput = new double[nbDerivatives];
-    for(int loopd=0; loopd< nbDerivatives; loopd++) {
+    for (int loopd = 0; loopd < nbDerivatives; loopd++) {
       derivativesOutput[loopd] = d1.derivatives()[loopd] + d2.derivatives()[loopd];
     }
     return new DoubleSad(valueOutput, derivativesOutput);

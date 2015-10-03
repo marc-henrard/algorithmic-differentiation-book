@@ -1,12 +1,13 @@
 /**
  * Copyright (C) 2014 - present by Marc Henrard
  */
-package marc.henrard.book.algorithmicdifferentiation.finance;
+package marc.henrard.book.algorithmicdifferentiation.finance.formula;
 
 import static org.testng.AssertJUnit.assertEquals;
 
 import java.util.function.Function;
 
+import marc.henrard.book.algorithmicdifferentiation.finance.formula.BlackFormula;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeEntryAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeUtils;
@@ -110,9 +111,12 @@ public class BlackFormulaTest {
             DATA_AAD[looptest][4][looppc], callPut[looppc], TAPE[looptest][looppc]);
         assertEquals("BlackFormula AAD " + looptest, 
             callPriceAad_Optimized.value(), callPriceAad_Automatic.value(), TOLERANCE_PRICE);
-        TapeUtils.interpret(TAPE[looptest][looppc]);
-        double[] d = TapeUtils.extractDerivatives(TAPE[looptest][looppc]);
-        ArrayAsserts.assertArrayEquals("BlackFormula AAD " + looptest, callPriceAad_Optimized.derivatives(), d, TOLERANCE_DELTA);
+        double[] d1 = TapeUtils.interpret(TAPE[looptest][looppc]);
+        double[] d2 = TapeUtils.extractDerivatives(TAPE[looptest][looppc]);
+        ArrayAsserts.assertArrayEquals("BlackFormula AAD " + looptest, 
+            callPriceAad_Optimized.derivatives(), d1, TOLERANCE_DELTA);
+        ArrayAsserts.assertArrayEquals("BlackFormula AAD " + looptest, 
+            callPriceAad_Optimized.derivatives(), d2, TOLERANCE_DELTA);
       }
     }
   }

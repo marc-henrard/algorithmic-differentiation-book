@@ -3,6 +3,9 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.type;
 
+import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
+import marc.henrard.book.algorithmicdifferentiation.tape.TapeEntryAad;
+
 /**
  * Class describing a augmented double for Adjoint (or Reverse) Algorithmic Differentiation.
  */
@@ -37,6 +40,17 @@ public class DoubleAad {
    */
   public int tapeIndex() {
     return tapeIndex;
+  }
+  
+  /**
+   * Returns a new DoubleAad with the value and add an entry in the tape with that value and 
+   * operation type INPUT.
+   * @param value The input value
+   * @param tape The tape.
+   * @return The input DoubleAad.
+   */
+  public static DoubleAad input(double value, TapeAad tape){
+    return new DoubleAad(value, tape.addEntry(new TapeEntryAad(OperationTypeAad.INPUT, value)));
   }
 
 }
