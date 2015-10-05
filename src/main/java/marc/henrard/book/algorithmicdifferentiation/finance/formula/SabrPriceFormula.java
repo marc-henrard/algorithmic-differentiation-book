@@ -17,7 +17,7 @@ import marc.henrard.book.algorithmicdifferentiation.type.OperationTypeAad;
  * <p>
  * Implementation of the price and different algorithmic differentiation versions.
  */
-public class SabrFormula {
+public class SabrPriceFormula {
   
   /**
    * The option price in the SABR model with implied volatility.
@@ -148,9 +148,9 @@ public class SabrFormula {
       DoubleAad expiry, 
       boolean isCall, 
       TapeAad tape) {
-    DoubleAad volatility = SabrVolatilityFormula
-        .volatility_Aad_Automatic2(forward, alpha, beta, rho, nu, strike, expiry, tape);
-    DoubleAad price = BlackFormula.price_Aad_Automatic(forward, volatility, numeraire, strike, expiry, isCall, tape);
+    DoubleAad volatility = 
+        SabrVolatilityFormula.volatility_Aad_Automatic2(forward, alpha, beta, rho, nu, strike, expiry, tape);
+    DoubleAad price = BlackFormula.price_Aad_Automatic2(forward, volatility, numeraire, strike, expiry, isCall, tape);
     return price;
   }
   
@@ -171,7 +171,7 @@ public class SabrFormula {
    * @param isCall The call (true) / put (false) flag.
    * @return The price and its derivatives.
    */
-  public static DoubleDerivatives price_Aad_Mixed1(
+  public static DoubleDerivatives price_Aad_Mixed_M_1(
       double forward, 
       double alpha, 
       double beta, 
@@ -231,7 +231,7 @@ public class SabrFormula {
    * @param tape The tape where the operations are recorded. The tape is modified by the method.
    * @return The price and its derivatives.
    */
-  public static DoubleAad price_Aad_Mixed2(
+  public static DoubleAad price_Aad_Mixed_A_1(
       DoubleAad forward, 
       DoubleAad alpha, 
       DoubleAad beta, 
@@ -242,7 +242,8 @@ public class SabrFormula {
       DoubleAad expiry, 
       boolean isCall, 
       TapeAad tape) {
-    DoubleAad volatility = SabrVolatilityFormula.volatility_Aad_Automatic(forward, alpha, beta, rho, nu, strike, expiry, tape);
+    DoubleAad volatility = 
+        SabrVolatilityFormula.volatility_Aad_Automatic(forward, alpha, beta, rho, nu, strike, expiry, tape);
     DoubleDerivatives price = BlackFormula.price_Aad_Optimized(forward.value(), volatility.value(), 
         numeraire.value(), strike.value(), expiry.value(), isCall);
     int indexForward = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
@@ -276,7 +277,7 @@ public class SabrFormula {
    * @param tape The tape where the operations are recorded. The tape is modified by the method.
    * @return The price and its derivatives.
    */
-  public static DoubleAad price_Aad_Mixed3(
+  public static DoubleAad price_Aad_Mixed_A_2(
       DoubleAad forward, 
       DoubleAad alpha, 
       DoubleAad beta, 

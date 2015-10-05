@@ -352,21 +352,21 @@ public class SabrVolatilityFormula {
     inputBar[5] += 0.5 * beta1 * fKbeta / strike * fKbetaBar;
     inputBar[5] += -logfKBar / strike;
     inputBar[6] += (factor31 + factor32 + factor33) * factor3Bar;
-    int indexForward = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+    int indexVolatility0 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
         forwardAad.tapeIndex(), volatility, inputBar[0]));
-    int indexAlpha = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
-        alphaAad.tapeIndex(), indexForward, volatility, inputBar[1]));
-    int indexBeta = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
-        betaAad.tapeIndex(), indexAlpha, volatility, inputBar[2]));
-    int indexRho = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
-        rhoAad.tapeIndex(), indexBeta, volatility, inputBar[3]));
-    int indexNu = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
-        nuAad.tapeIndex(), indexRho, volatility, inputBar[4]));
-    int indexStrike = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
-        strikeAad.tapeIndex(), indexNu, volatility, inputBar[5]));
-    int indexVolatility = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
-        expiryAad.tapeIndex(), indexStrike, volatility, inputBar[6]));
-    DoubleAad volatilityAad = new DoubleAad(volatility, indexVolatility);
+    int indexVolatility1 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        alphaAad.tapeIndex(), indexVolatility0, volatility, inputBar[1]));
+    int indexVolatility2 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        betaAad.tapeIndex(), indexVolatility1, volatility, inputBar[2]));
+    int indexVolatility3 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        rhoAad.tapeIndex(), indexVolatility2, volatility, inputBar[3]));
+    int indexVolatility4 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        nuAad.tapeIndex(), indexVolatility3, volatility, inputBar[4]));
+    int indexVolatility5 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        strikeAad.tapeIndex(), indexVolatility4, volatility, inputBar[5]));
+    int indexVolatility6 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        expiryAad.tapeIndex(), indexVolatility5, volatility, inputBar[6]));
+    DoubleAad volatilityAad = new DoubleAad(volatility, indexVolatility6);
     return volatilityAad;
   }
 

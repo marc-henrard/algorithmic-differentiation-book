@@ -168,6 +168,32 @@ public class BlackFormulaAnalysis {
       // Performance note: price AD Automatic: 04-Aug-2015: On Mac Book Pro 2.6 GHz Intel Core i7: 660 ms for 5x2x100,000 derivatives.
       // XXX ms recording only (no interpretation).
       
+      startTime = System.currentTimeMillis();
+      hotspot = 0;
+      for (int loopperf = 0; loopperf < nbTest; loopperf++) {
+        for (int looptest = 0; looptest < NB_TESTS; looptest++) {
+          TapeAad tapeCall = new TapeAad();
+          DoubleAad[][] dataAad = new DoubleAad[5][2];
+          TapeAad tapePut = new TapeAad();
+          for (int loopi = 0; loopi < 5; loopi++) {
+            int va0 = tapeCall.addEntry(new TapeEntryAad(OperationTypeAad.INPUT, DATA[looptest][loopi]));
+            dataAad[loopi][0] = new DoubleAad(DATA[looptest][loopi], va0);
+            int va1 = tapePut.addEntry(new TapeEntryAad(OperationTypeAad.INPUT, DATA[looptest][loopi]));
+            dataAad[loopi][1] = new DoubleAad(DATA[looptest][loopi], va1);
+          }
+          DoubleAad callPriceAd = BlackFormula.price_Aad_Automatic2(dataAad[0][0], dataAad[1][0],
+              dataAad[2][0], dataAad[3][0], dataAad[4][0], true, tapeCall);
+          double[] dCall = TapeUtils.interpret(tapeCall);
+          DoubleAad putPriceAd = BlackFormula.price_Aad_Automatic2(dataAad[0][1], dataAad[1][1],
+              dataAad[2][1], dataAad[3][1], dataAad[4][1], false, tapePut);
+          double[] dPut = TapeUtils.interpret(tapePut);
+          hotspot += dCall.length + dPut.length;
+        }
+      }
+      endTime = System.currentTimeMillis();
+      System.out.println("  |--> " + nbTest + " function + AAD Automatic 2: " + (endTime - startTime) + " ms ... " + hotspot);
+      // Performance note: price AD Automatic 2: 03-Oct-2015: On Mac Book Pro 2.6 GHz Intel Core i7: 530 ms for 5x2x100,000 derivatives.
+      
     } // End repetition
 
   }

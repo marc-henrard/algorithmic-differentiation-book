@@ -7,9 +7,11 @@ import cern.jet.random.Normal;
 import marc.henrard.book.algorithmicdifferentiation.mathad.MathAad;
 import marc.henrard.book.algorithmicdifferentiation.mathad.MathSad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
+import marc.henrard.book.algorithmicdifferentiation.tape.TapeEntryAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleDerivatives;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleSad;
+import marc.henrard.book.algorithmicdifferentiation.type.OperationTypeAad;
 
 /**
  * Implementation of the Black-Scholes formula for option pricing.
@@ -62,7 +64,6 @@ public class BlackFormula {
    * @param expiry The time to expiry.
    * @param isCall The call (true) / put (false) flag.
    * @return The price and derivatives.
-   * @throws MathException 
    */
   public static DoubleDerivatives price_Sad(
       double forward, 
@@ -131,7 +132,6 @@ public class BlackFormula {
    * @param expiry The time to expiry.
    * @param isCall The call (true) / put (false) flag.
    * @return The price and derivatives.
-   * @throws MathException 
    */
   public static DoubleSad price_Sad_Automatic(
       double forward, 
@@ -172,7 +172,6 @@ public class BlackFormula {
    * @param expiry The time to expiry.
    * @param isCall The call (true) / put (false) flag.
    * @return The price and derivatives.
-   * @throws MathException 
    */
   public static DoubleDerivatives price_Aad(
       double forward, 
@@ -219,7 +218,6 @@ public class BlackFormula {
    * @param expiry The time to expiry.
    * @param isCall The call (true) / put (false) flag.
    * @return The price and derivatives.
-   * @throws MathException 
    */
   public static DoubleDerivatives price_Aad_Optimized(
       double forward, 
@@ -263,7 +261,6 @@ public class BlackFormula {
    * @param isCall The call (true) / put (false) flag.
    * @param tape The tape where the operations are recorded. The tape is modified by the method.
    * @return The price and derivatives.
-   * @throws MathException 
    */
   public static DoubleAad price_Aad_Automatic(
       DoubleAad forward, 
@@ -283,6 +280,67 @@ public class BlackFormula {
     DoubleAad price = MathAad.multipliedBy(MathAad.multipliedBy(numeraire, omega, tape), 
         MathAad.minus(MathAad.multipliedBy(forward, nPlus, tape), MathAad.multipliedBy(strike, nMinus, tape), tape), tape);
     return price;
+  }
+
+  /**
+   * Returns the option price for the Black-Scholes formula and its derivatives with respect to 
+   * [0] forward, [1] volatility, [2] numeraire, [3] strike, and [4] expiry.
+   * The derivatives are computed by Adjoint Algorithmic Differentiation.
+   * The formula is optimized to reduce computation time by using domain specific knowledge.
+   * The code is written manually but the object returned is the one used in Automatic AAD. 
+   * This code demonstrate that it is possible to combine manual and automatic AD.
+   * @param forward The forward price/rate.
+   * @param volatility The log-normal volatility of the model.
+   * @param numeraire The numeraire.
+   * @param strike The strike price/rate.
+   * @param expiry The time to expiry.
+   * @param isCall The call (true) / put (false) flag.
+   * @return The price and derivatives.
+   */
+  public static DoubleAad price_Aad_Automatic2(
+      DoubleAad forwardAad, 
+      DoubleAad volatilityAad, 
+      DoubleAad numeraireAad,
+      DoubleAad strikeAad, 
+      DoubleAad expiryAad,
+      boolean isCall, 
+      TapeAad tape) {
+    double forward = forwardAad.value();
+    double volatility = volatilityAad.value();
+    double numeraire = numeraireAad.value();
+    double strike = strikeAad.value();
+    double expiry = expiryAad.value();
+    // Forward sweep - function
+    double omega = isCall ? 1.0d : -1.0d;
+    double sqrtExpiry = Math.sqrt(expiry);
+    double periodVolatility = volatility * sqrtExpiry;
+    double dPlus = Math.log(forward / strike) / periodVolatility + 0.5d * periodVolatility;
+    double dMinus = dPlus - periodVolatility;
+    double nPlus = NORMAL.cdf(omega * dPlus);
+    double nMinus = NORMAL.cdf(omega * dMinus);
+    double price = numeraire * omega * (forward * nPlus - strike * nMinus);
+    // Backward sweep - derivatives
+    double priceBar = 1.0;
+    double nMinusBar = numeraire * omega * -strike * priceBar;
+    double dMinusBar = NORMAL.pdf(omega * dMinus) * omega * nMinusBar;
+    double periodVolatilityBar = -1.0d * dMinusBar;
+    double[] inputBar = new double[5]; // forward, volatility, numeraire, strike, expiry
+    inputBar[4] = volatility * 0.5 / sqrtExpiry * periodVolatilityBar;
+    inputBar[3] = numeraire * omega * -nMinus * priceBar;
+    inputBar[2] = omega * (forward * nPlus - strike * nMinus) * priceBar;
+    inputBar[1] = sqrtExpiry * periodVolatilityBar;
+    inputBar[0] = numeraire * omega * nPlus * priceBar;
+    int indexPrice0 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        forwardAad.tapeIndex(), price, inputBar[0]));
+    int indexPrice1 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        volatilityAad.tapeIndex(), indexPrice0, price, inputBar[1]));
+    int indexPrice2 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        numeraireAad.tapeIndex(), indexPrice1, price, inputBar[2]));
+    int indexPrice3 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        strikeAad.tapeIndex(), indexPrice2, price, inputBar[3]));
+    int indexPrice4 = tape.addEntry(new TapeEntryAad(OperationTypeAad.MANUAL, 
+        expiryAad.tapeIndex(), indexPrice3, price, inputBar[4]));
+    return new DoubleAad(price, indexPrice4);
   }
   
 }
