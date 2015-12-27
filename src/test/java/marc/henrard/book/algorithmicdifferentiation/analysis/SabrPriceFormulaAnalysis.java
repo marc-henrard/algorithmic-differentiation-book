@@ -35,7 +35,7 @@ public class SabrPriceFormulaAnalysis {
 
     long startTime, endTime;
     final int nbTest = 100_000;
-    int nbRep = 5;
+    int nbRep = 2;
     long hotspot = 0; // To ensure that no code is hotspot away
     boolean[] callPut = {true, false};
 
@@ -85,7 +85,7 @@ public class SabrPriceFormulaAnalysis {
               int index = tape.addEntry(new TapeEntryAad(OperationTypeAad.INPUT, DATA[looptest][loopi]));
               dataAad[loopi] = new DoubleAad(DATA[looptest][loopi], index);
             }
-            DoubleAad price = SabrPriceFormula.price_Aad_Automatic(dataAad[0], dataAad[1],
+            DoubleAad price = SabrPriceFormula.price_Aad_Automatic2(dataAad[0], dataAad[1],
                 dataAad[2], dataAad[3], dataAad[4], dataAad[5], dataAad[6], dataAad[7], callPut[looppc], tape);
             double[] d = TapeUtils.interpret(tape);
             hotspot += d.length;
@@ -93,8 +93,8 @@ public class SabrPriceFormulaAnalysis {
         }
       }
       endTime = System.currentTimeMillis();
-      System.out.println("  |--> " + nbTest + " SABR price (Automatic AAD): " + (endTime - startTime) + " ms ... " + hotspot);
-      // Performance: price Automatic AAD (no interpret/interpret): 25-Dec-2014: Mac Book Pro 2.6 GHz Intel Core i7: 1300/1910 ms for 5x2x100,000 functions.
+      System.out.println("  |--> " + nbTest + " SABR price (Automatic2 AAD): " + (endTime - startTime) + " ms ... " + hotspot);
+      // Performance: price Automatic2 AAD: 25-Dec-2014: Mac Book Pro 2.6 GHz Intel Core i7: XXX ms for 5x2x100,000 functions.
 
       startTime = System.currentTimeMillis();
       hotspot = 0;
@@ -107,16 +107,17 @@ public class SabrPriceFormulaAnalysis {
               int index = tape.addEntry(new TapeEntryAad(OperationTypeAad.INPUT, DATA[looptest][loopi]));
               dataAad[loopi] = new DoubleAad(DATA[looptest][loopi], index);
             }
-            DoubleAad price = SabrPriceFormula.price_Aad_Automatic2(dataAad[0], dataAad[1],
+            DoubleAad price = SabrPriceFormula.price_Aad_Automatic(dataAad[0], dataAad[1],
                 dataAad[2], dataAad[3], dataAad[4], dataAad[5], dataAad[6], dataAad[7], callPut[looppc], tape);
             double[] d = TapeUtils.interpret(tape);
             hotspot += d.length;
+//            hotspot += (int) (price.value() * 10);
           }
         }
       }
       endTime = System.currentTimeMillis();
-      System.out.println("  |--> " + nbTest + " SABR price (Automatic2 AAD): " + (endTime - startTime) + " ms ... " + hotspot);
-      // Performance: price Automatic2 AAD (no interpret/interpret): 25-Dec-2014: Mac Book Pro 2.6 GHz Intel Core i7: XXX/XXX ms for 5x2x100,000 functions.
+      System.out.println("  |--> " + nbTest + " SABR price (Automatic AAD): " + (endTime - startTime) + " ms ... " + hotspot);
+      // Performance: price Automatic AAD (no interpret/interpret): 25-Dec-2014: Mac Book Pro 2.6 GHz Intel Core i7: 1300/1910 ms for 5x2x100,000 functions.
 
       startTime = System.currentTimeMillis();
       hotspot = 0;
@@ -155,8 +156,8 @@ public class SabrPriceFormulaAnalysis {
       }
       endTime = System.currentTimeMillis();
       System.out.println("  |--> " + nbTest + " SABR price (AAD Mixed A 1): " + (endTime - startTime) + " ms ... " + hotspot);
-      // Performance note: price Mixed2 AAD (no interpret/interpret): 25-Dec-2014: 
-      //   On Mac Book Pro 2.6 GHz Intel Core i7: XXX/1720 ms for 5x2x100,000 functions.
+      // Performance note: price Mixed2 AAD 25-Dec-2014: 
+      //   On Mac Book Pro 2.6 GHz Intel Core i7: 2500 ms for 5x2x100,000 functions.
 
       startTime = System.currentTimeMillis();
       hotspot = 0;
