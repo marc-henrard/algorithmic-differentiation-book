@@ -28,5 +28,7 @@ Book details
 Book description on the [editor website (Palgrave)](https://www.palgrave.com/gp/book/9783319539782)
 
 Book purchase on 
-* [Amazon UK](https://www.amazon.co.uk/Algorithmic-Differentiation-Explained-Financial-Engineering/dp/3319539787/)
-* [Amazon US](https://www.amazon.com/Algorithmic-Differentiation-Explained-Financial-Engineering/dp/3319539787/)
+
+- [Amazon UK](https://www.amazon.co.uk/Algorithmic-Differentiation-Explained-Financial-Engineering/dp/3319539787/)
+
+- [Amazon US](https://www.amazon.com/Algorithmic-Differentiation-Explained-Financial-Engineering/dp/3319539787/)
