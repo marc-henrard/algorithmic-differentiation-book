@@ -1,4 +1,3 @@
-=====
 Algorithmic Differentiation in Finance
 =====
 
