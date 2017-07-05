@@ -22,6 +22,7 @@ import org.testng.internal.junit.ArrayAsserts;
 /**
  * Tests {@link InterpolationLinear}
  */
+@Test
 public class InterpolationLinearTest {
   
   /* The interpolator (linear) */
@@ -57,7 +58,6 @@ public class InterpolationLinearTest {
   static private final double TOLERANCE_VALUE = 1.0E-10;
   static private final double TOLERANCE_DELTA = 1.0E-6;
   
-  @Test
   public void value() {
     for (int looptest = 0; looptest < NB_TESTS; looptest++) {
       for (int loopv = 0; loopv < X[looptest].length; loopv++) {
@@ -73,7 +73,6 @@ public class InterpolationLinearTest {
     }
   }
 
-  @Test
   public void derivativesX() {
     for (int looptest = 3; looptest < NB_TESTS; looptest++) {
       for (int loopv = 0; loopv < X[looptest].length; loopv++) {
@@ -93,7 +92,6 @@ public class InterpolationLinearTest {
     }
   }
 
-  @Test
   public void derivativesNodeYValues() {
     for (int looptest = 0; looptest < NB_TESTS; looptest++) {
       for (int loopv = 0; loopv < X[looptest].length; loopv++) {
@@ -110,7 +108,6 @@ public class InterpolationLinearTest {
     }
   }
 
-  @Test
   public void derivativesNodeYValuesTape() {
     for (int looptest = 0; looptest < NB_TESTS; looptest++) {
       for (int loopv = 0; loopv < X[looptest].length; loopv++) {
@@ -124,20 +121,29 @@ public class InterpolationLinearTest {
         DoubleAad x = new DoubleAad(X[looptest][loopv], indexx);
         InterpolationDataDoubleAad data = new InterpolationDataDoubleAad(DATA_NODES[looptest], nodeValuesAad);
         DoubleDerivatives interpAad = INTERPOLATION.interpolate_Aad(X[looptest][loopv], DATA[looptest]);
-        double interpP = INTERPOLATION.interpolate(X[looptest][loopv]+EPSILON, DATA[looptest]);
         DoubleAad interpAadAutomatic = INTERPOLATION.interpolate_Aad_Automatic(x, data, tape);
         assertEquals("InterpolationLinear" + looptest + " - " + loopv,
             interpAad.value(), interpAadAutomatic.value(), TOLERANCE_VALUE);
         double[] d = TapeUtils.interpret(tape);
+        // Derivatives with respect to node values
         for (int loopi = 0; loopi < DATA_NODES[looptest].length; loopi++) {
           assertEquals("InterpolationLinear" + looptest + " - " + loopv,
               interpAad.derivatives()[loopi], d[loopi], TOLERANCE_DELTA);
         }
-        assertEquals((interpP - interpAad.value()) / EPSILON, d[DATA_NODES[looptest].length], TOLERANCE_DELTA);
+        // Derivatives with respect to x value - meaningful only if not on a node
+        boolean isnode = false;
+        for (int loopi = 0; loopi < DATA_NODES[looptest].length; loopi++) {
+          isnode = (isnode || (X[looptest][loopv] == DATA_NODES[looptest][loopi]));
+        }
+        if (!isnode) {
+          double shift = EPSILON;
+          double interpP = INTERPOLATION.interpolate(X[looptest][loopv] + shift, DATA[looptest]);
+          assertEquals((interpP - interpAad.value()) / shift, d[DATA_NODES[looptest].length], TOLERANCE_DELTA);
+        }
       }
     }
   }
-  
+
   private static int lowerIndex(double value, double[] nodes) {
     if(value == nodes[nodes.length - 1]) {
       return nodes.length - 2;

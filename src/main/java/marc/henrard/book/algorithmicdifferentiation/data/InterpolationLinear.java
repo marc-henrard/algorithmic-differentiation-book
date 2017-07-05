@@ -3,6 +3,8 @@
  */
 package marc.henrard.book.algorithmicdifferentiation.data;
 
+import com.opengamma.strata.collect.ArgChecker;
+
 import marc.henrard.book.algorithmicdifferentiation.mathad.MathAad;
 import marc.henrard.book.algorithmicdifferentiation.tape.TapeAad;
 import marc.henrard.book.algorithmicdifferentiation.type.DoubleAad;
@@ -79,9 +81,10 @@ public class InterpolationLinear implements Interpolation {
         MathAad.multipliedBy(slope, MathAad.plus(x, - data.nodes()[i-1], tape), tape), tape);
     return interp;
   }
-  
+
   /* Returns the upper bound for a given value in the nodes */
   private static int upperIndex(double value, double[] nodes) {
+    ArgChecker.inRangeInclusive(value, nodes[0], nodes[nodes.length - 1], "nodes");
     if (value == nodes[0]) {
       return 1;
     }
