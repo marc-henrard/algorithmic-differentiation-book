@@ -31,3 +31,6 @@ Book purchase on
 - [Amazon UK](https://www.amazon.co.uk/Algorithmic-Differentiation-Explained-Financial-Engineering/dp/3319539787/)
 
 - [Amazon US](https://www.amazon.com/Algorithmic-Differentiation-Explained-Financial-Engineering/dp/3319539787/)
+
+
+![Book’s cover title](https://2.bp.blogspot.com/-0Pox8sOuXt8/WXM_gSN3h4I/AAAAAAAABEI/cEg-ph_A1ZQ18om_EQhmnTptyOHwwFERwCLcBGAs/s1600/2017_07_CoverTitle.tiff)
